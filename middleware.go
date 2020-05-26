@@ -14,9 +14,9 @@ func JWTAuthentication(secrets ...string) gglmm.Middleware {
 		Func: func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				for _, secret := range secrets {
-					authInfo, _, err := ParseAuthJWT(GetAuthJWT(r), secret)
+					info, _, err := ParseToken(GetToken(r), secret)
 					if err == nil {
-						r = RequestWithAuthInfo(r, authInfo)
+						r = RequestWithInfo(r, info)
 						next.ServeHTTP(w, r)
 						return
 					}

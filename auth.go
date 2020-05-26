@@ -10,29 +10,28 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// AuthKey 认证信息键类型
-type AuthKey string
+type reqeustKey string
 
 const (
 	// AuthInfoRequestKey 认证信息请求建
-	AuthInfoRequestKey AuthKey = "gglmm-auth-info"
+	AuthInfoRequestKey reqeustKey = "gglmm-auth-info"
 )
 
-// AuthInfo 认证信息
-type AuthInfo struct {
+// Info 认证信息
+type Info struct {
 	Type      string `json:"type"`
 	ID        int64  `json:"id"`
 	Nickname  string `json:"nickname"`
 	AvatarURL string `json:"avatarUrl"`
 }
 
-// Authenticationable 可认证类型
-type Authenticationable interface {
-	AuthInfo() *AuthInfo
+// Authenticator 可认证类型
+type Authenticator interface {
+	AuthInfo() *Info
 }
 
-// GenerateAuthJWT 生成 Authorization Token
-func GenerateAuthJWT(user Authenticationable, expires int64, secret string) (string, *jwt.StandardClaims, error) {
+// GenerateToken 生成 Authorization Token
+func GenerateToken(user Authenticator, expires int64, secret string) (string, *jwt.StandardClaims, error) {
 	jwtClaims, err := jwtGenerateClaims(user.AuthInfo(), expires)
 	if err != nil {
 		return "", jwtClaims, err
@@ -45,62 +44,62 @@ func GenerateAuthJWT(user Authenticationable, expires int64, secret string) (str
 	return tokenString, jwtClaims, nil
 }
 
-// ParseAuthJWT 解析 Authorization Token
-func ParseAuthJWT(tokenString string, secret string) (*AuthInfo, *jwt.StandardClaims, error) {
+// ParseToken 解析 Authorization Token
+func ParseToken(tokenString string, secret string) (*Info, *jwt.StandardClaims, error) {
 	jwtClaims, err := jwtParseClaims(tokenString, secret)
 	if err != nil {
 		return nil, nil, err
 	}
-	authInfo := &AuthInfo{}
-	err = json.Unmarshal([]byte(jwtClaims.Subject), authInfo)
+	info := &Info{}
+	err = json.Unmarshal([]byte(jwtClaims.Subject), info)
 	if err != nil {
 		return nil, nil, ErrAuthJWT
 	}
-	return authInfo, jwtClaims, nil
+	return info, jwtClaims, nil
 }
 
-// GetAuthJWT 从请求里取 Authorization Token
-func GetAuthJWT(r *http.Request) string {
+// GetToken 从请求里取 Authorization Token
+func GetToken(r *http.Request) string {
 	return strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 }
 
-// RequestWithAuthInfo 给请求设置 Authorization
-func RequestWithAuthInfo(r *http.Request, authInfo *AuthInfo) *http.Request {
-	return r.WithContext(context.WithValue(r.Context(), AuthInfoRequestKey, authInfo))
+// RequestWithInfo 给请求设置 Authorization
+func RequestWithInfo(r *http.Request, info *Info) *http.Request {
+	return r.WithContext(context.WithValue(r.Context(), AuthInfoRequestKey, info))
 }
 
-// GetAuthInfo 从请求取 Authorization
-func GetAuthInfo(r *http.Request) (*AuthInfo, error) {
+// GetInfo 从请求取 Authorization
+func GetInfo(r *http.Request) (*Info, error) {
 	value := r.Context().Value(AuthInfoRequestKey)
 	if value == nil {
 		return nil, ErrAuthInfoNotFound
 	}
-	authInfo, ok := value.(*AuthInfo)
+	info, ok := value.(*Info)
 	if !ok {
 		return nil, ErrAuthInfoNotFound
 	}
-	return authInfo, nil
+	return info, nil
 }
 
-// GetAuthType 从请求取 Authorization Type
-func GetAuthType(r *http.Request) (string, error) {
-	authInfo, err := GetAuthInfo(r)
+// GetType 从请求取 Authorization Type
+func GetType(r *http.Request) (string, error) {
+	info, err := GetInfo(r)
 	if err != nil {
 		return "", err
 	}
-	return authInfo.Type, nil
+	return info.Type, nil
 }
 
-// GetAuthID 从请求取 Authorization ID
-func GetAuthID(r *http.Request, checkType string) (int64, error) {
-	authInfo, err := GetAuthInfo(r)
+// GetID 从请求取 Authorization ID
+func GetID(r *http.Request, checkType string) (int64, error) {
+	info, err := GetInfo(r)
 	if err != nil {
 		return 0, err
 	}
-	if authInfo.Type != checkType {
+	if info.Type != checkType {
 		return 0, ErrAuthType
 	}
-	return authInfo.ID, nil
+	return info.ID, nil
 }
 
 const (
