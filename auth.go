@@ -13,8 +13,7 @@ import (
 type reqeustKey string
 
 const (
-	// AuthInfoRequestKey 认证信息请求建
-	AuthInfoRequestKey reqeustKey = "gglmm-auth-info"
+	authInfoRequestKey reqeustKey = "gglmm-auth-info"
 )
 
 // Info 认证信息
@@ -30,7 +29,7 @@ type Authenticator interface {
 	AuthInfo() *Info
 }
 
-// GenerateToken 生成 Authorization Token
+// GenerateToken 生成认证凭证
 func GenerateToken(user Authenticator, expires int64, secret string) (string, *jwt.StandardClaims, error) {
 	jwtClaims, err := jwtGenerateClaims(user.AuthInfo(), expires)
 	if err != nil {
@@ -44,7 +43,7 @@ func GenerateToken(user Authenticator, expires int64, secret string) (string, *j
 	return tokenString, jwtClaims, nil
 }
 
-// ParseToken 解析 Authorization Token
+// ParseToken 解析认证凭证
 func ParseToken(tokenString string, secret string) (*Info, *jwt.StandardClaims, error) {
 	jwtClaims, err := jwtParseClaims(tokenString, secret)
 	if err != nil {
@@ -58,19 +57,19 @@ func ParseToken(tokenString string, secret string) (*Info, *jwt.StandardClaims, 
 	return info, jwtClaims, nil
 }
 
-// GetToken 从请求里取 Authorization Token
-func GetToken(r *http.Request) string {
+// TokenFrom 从请求里取认证凭证
+func TokenFrom(r *http.Request) string {
 	return strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 }
 
-// RequestWithInfo 给请求设置 Authorization
+// RequestWithInfo 给请求设置认证信息
 func RequestWithInfo(r *http.Request, info *Info) *http.Request {
-	return r.WithContext(context.WithValue(r.Context(), AuthInfoRequestKey, info))
+	return r.WithContext(context.WithValue(r.Context(), authInfoRequestKey, info))
 }
 
-// GetInfo 从请求取 Authorization
-func GetInfo(r *http.Request) (*Info, error) {
-	value := r.Context().Value(AuthInfoRequestKey)
+// InfoFrom 从请求取认证信息
+func InfoFrom(r *http.Request) (*Info, error) {
+	value := r.Context().Value(authInfoRequestKey)
 	if value == nil {
 		return nil, ErrAuthInfoNotFound
 	}
@@ -81,18 +80,18 @@ func GetInfo(r *http.Request) (*Info, error) {
 	return info, nil
 }
 
-// GetType 从请求取 Authorization Type
-func GetType(r *http.Request) (string, error) {
-	info, err := GetInfo(r)
+// TypeFrom 从请求取认证类型
+func TypeFrom(r *http.Request) (string, error) {
+	info, err := InfoFrom(r)
 	if err != nil {
 		return "", err
 	}
 	return info.Type, nil
 }
 
-// GetID 从请求取 Authorization ID
-func GetID(r *http.Request, checkType string) (int64, error) {
-	info, err := GetInfo(r)
+// IDFrom 从请求取认证ID
+func IDFrom(r *http.Request, checkType string) (int64, error) {
+	info, err := InfoFrom(r)
 	if err != nil {
 		return 0, err
 	}

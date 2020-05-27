@@ -27,14 +27,14 @@ func TestAuthorization(t *testing.T) {
 	}
 	r1.Header.Add("Authorization", "Bearer "+token)
 
-	token = GetToken(r1)
+	token = TokenFrom(r1)
 	_, _, err = ParseToken(token, "testSecret")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	r2 := RequestWithInfo(r1, userID.AuthInfo())
-	id, err := GetID(r2, "testType")
+	id, err := IDFrom(r2, "testType")
 	if err != nil {
 		t.Fatal(err)
 	}
