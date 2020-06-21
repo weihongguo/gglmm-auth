@@ -7,10 +7,10 @@ import (
 	"github.com/weihongguo/gglmm"
 )
 
-// JWTAuthentication JWT通用认证中间件
-func JWTAuthentication(secrets ...string) gglmm.Middleware {
+// MiddlewareJWTAuth JWT通用认证中间件
+func MiddlewareJWTAuth(secrets ...string) gglmm.Middleware {
 	return gglmm.Middleware{
-		Name: fmt.Sprintf("%s%+v", "JWTAuthentication", secrets),
+		Name: fmt.Sprintf("%s%+v", "JWTAuth", secrets),
 		Func: func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				for _, secret := range secrets {
