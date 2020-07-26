@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/weihongguo/gglmm"
+	weixin "github.com/weihongguo/gglmm-weixin"
 )
 
 type reqeustKey string
@@ -24,14 +26,22 @@ type Info struct {
 	AvatarURL string `json:"avatarUrl"`
 }
 
-// Authenticator 可认证类型
-type Authenticator interface {
-	AuthInfo() *Info
+// User --
+type User interface {
+	Login(request LoginRequest) (*Info, error)
+	AuthInfo(request gglmm.IDRequest) (*Info, error)
+}
+
+// WeixinMiniProgramUser --
+type WeixinMiniProgramUser interface {
+	Login(code2SessionResponse *weixin.MiniProgramCode2SessionResponse) (*Info, error)
+	AuthInfoRaw(userID int64, userInfoRequest *weixin.MiniProgramUserInfoRequest) (*Info, error)
+	AuthInfoEncrypted(userID int64, userInfoRequest *weixin.MiniProgramUserInfoRequest) (*Info, error)
 }
 
 // GenerateToken 生成认证凭证
-func GenerateToken(user Authenticator, expires int64, secret string) (string, *jwt.StandardClaims, error) {
-	jwtClaims, err := jwtGenerateClaims(user.AuthInfo(), expires)
+func GenerateToken(info *Info, expires int64, secret string) (string, *jwt.StandardClaims, error) {
+	jwtClaims, err := jwtGenerateClaims(info, expires)
 	if err != nil {
 		return "", jwtClaims, err
 	}

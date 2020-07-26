@@ -16,7 +16,7 @@ func (id UserID) AuthInfo() *Info {
 
 func TestAuthorization(t *testing.T) {
 	userID := UserID(1)
-	token, _, err := GenerateToken(userID, JWTExpires, "testSecret")
+	token, _, err := GenerateToken(userID.AuthInfo(), JWTExpires, "testSecret")
 	if err != nil {
 		t.Fatal(err)
 	}
