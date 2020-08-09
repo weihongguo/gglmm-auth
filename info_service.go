@@ -29,7 +29,7 @@ func (service *InfoService) Info(w http.ResponseWriter, r *http.Request) {
 	idRequest := gglmm.IDRequest{
 		ID: userID,
 	}
-	authInfo, err := service.user.AuthInfo(idRequest)
+	authInfo, err := service.user.Info(idRequest)
 	if err != nil {
 		gglmm.Panic(err)
 	}

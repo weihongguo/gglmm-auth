@@ -1,6 +1,9 @@
 package auth
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 var (
 	// ErrAuthJWT --
@@ -18,7 +21,7 @@ type ConfigJWT struct {
 }
 
 // Check --
-func (config *ConfigJWT) Check(cmd string) bool {
+func (config ConfigJWT) Check(cmd string) bool {
 	if cmd == "all" || cmd == "write" {
 		if config.Expires <= 0 {
 			return false
@@ -29,5 +32,6 @@ func (config *ConfigJWT) Check(cmd string) bool {
 			return false
 		}
 	}
+	log.Println("ConfigJWT check pass")
 	return true
 }

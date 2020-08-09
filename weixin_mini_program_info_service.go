@@ -47,7 +47,7 @@ func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http
 		return
 	}
 	if userInfoRequest.Check("raw") {
-		authInfo, err := service.user.AuthInfoRaw(userID, userInfoRequest)
+		authInfo, err := service.user.UserInfoRaw(userID, userInfoRequest)
 		if err != nil {
 			gglmm.Panic(err)
 		}
@@ -55,11 +55,11 @@ func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http
 			AddData("authInfo", authInfo).
 			JSON(w)
 	} else if userInfoRequest.Check("encrypted") {
-		authInfo, err := service.user.AuthInfoEncrypted(userID, userInfoRequest)
+		authInfo, err := service.user.UserInfoEncrypted(userID, userInfoRequest)
 		if err != nil {
 			gglmm.Panic(err)
 		}
-		authToken, jwtClaims, err := GenerateToken(authInfo, service.jwtExpires, service.jwtSecret)
+		authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 		if err != nil {
 			gglmm.Panic(err)
 		}

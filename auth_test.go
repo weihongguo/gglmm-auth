@@ -5,18 +5,21 @@ import (
 	"testing"
 )
 
-type UserID int64
+type UserID uint64
 
-func (id UserID) AuthInfo() *Info {
+func (id UserID) Info() *Info {
 	return &Info{
-		Type: "testType",
-		ID:   int64(id),
+		Subject: &Subject{
+			Type: "testType",
+			ID:   uint64(id),
+		},
 	}
 }
 
 func TestAuthorization(t *testing.T) {
 	userID := UserID(1)
-	token, _, err := GenerateToken(userID.AuthInfo(), JWTExpires, "testSecret")
+	info := userID.Info()
+	token, _, err := GenerateToken(info.Subject, JWTExpires, "testSecret")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +36,7 @@ func TestAuthorization(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r2 := RequestWithInfo(r1, userID.AuthInfo())
+	r2 := WithSubject(r1, info.Subject)
 	id, err := IDFrom(r2, "testType")
 	if err != nil {
 		t.Fatal(err)

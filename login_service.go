@@ -35,7 +35,7 @@ func (service *LoginService) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		gglmm.Panic(err)
 	}
-	authToken, jwtClaims, err := GenerateToken(authInfo, service.jwtExpires, service.jwtSecret)
+	authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 	if err != nil {
 		gglmm.Panic(err)
 	}

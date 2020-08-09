@@ -50,7 +50,7 @@ func (service *WeixinMiniProgramLoginService) Login(w http.ResponseWriter, r *ht
 	if err != nil {
 		gglmm.Panic(err)
 	}
-	authToken, jwtClaims, err := GenerateToken(authInfo, service.jwtExpires, service.jwtSecret)
+	authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 	if err != nil {
 		gglmm.Panic(err)
 	}
