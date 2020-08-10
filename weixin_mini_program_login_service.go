@@ -37,22 +37,27 @@ func NewWeixinMiniProgramLoginService(miniProgramConfig weixin.ConfigMiniProgram
 func (service *WeixinMiniProgramLoginService) Login(w http.ResponseWriter, r *http.Request) {
 	request, err := weixin.DecodeMiniProgramLoginRequest(r)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	if !request.Check() {
-		gglmm.Panic(gglmm.ErrRequest)
+		gglmm.FailResponse(gglmm.NewErrFileLine(gglmm.ErrRequest)).JSON(w)
+		return
 	}
 	code2SessionResponse, err := weixin.MiniProgramCode2Session(service.appID, service.appSecret, request.Code)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	authInfo, err := service.user.Login(code2SessionResponse)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	gglmm.OkResponse().
 		AddData("authToken", authToken).

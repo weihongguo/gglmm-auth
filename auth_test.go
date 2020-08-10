@@ -10,8 +10,8 @@ type UserID uint64
 func (id UserID) Info() *Info {
 	return &Info{
 		Subject: &Subject{
-			Type: "testType",
-			ID:   uint64(id),
+			UserType: "testType",
+			UserID:   uint64(id),
 		},
 	}
 }
@@ -37,7 +37,7 @@ func TestAuthorization(t *testing.T) {
 	}
 
 	r2 := WithSubject(r1, info.Subject)
-	id, err := IDFrom(r2, "testType")
+	id, err := UserIDFrom(r2, "testType")
 	if err != nil {
 		t.Fatal(err)
 	}

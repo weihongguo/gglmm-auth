@@ -36,20 +36,21 @@ func NewWeixinMiniProgramInfoService(miniProgramConfig weixin.ConfigMiniProgram,
 
 // Info --
 func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http.Request) {
-	userID, err := IDFrom(r, service.authType)
+	userID, err := UserIDFrom(r, service.authType)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
 	}
 	userInfoRequest, err := weixin.DecodeMiniProgramUserInfoRequest(r)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
 	}
 	if userInfoRequest.Check("raw") {
 		authInfo, err := service.user.UserInfoRaw(userID, userInfoRequest)
 		if err != nil {
-			gglmm.Panic(err)
+			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+			return
 		}
 		gglmm.OkResponse().
 			AddData("authInfo", authInfo).
@@ -57,11 +58,13 @@ func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http
 	} else if userInfoRequest.Check("encrypted") {
 		authInfo, err := service.user.UserInfoEncrypted(userID, userInfoRequest)
 		if err != nil {
-			gglmm.Panic(err)
+			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+			return
 		}
 		authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 		if err != nil {
-			gglmm.Panic(err)
+			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+			return
 		}
 		gglmm.OkResponse().
 			AddData("authToken", authToken).
@@ -70,6 +73,6 @@ func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http
 			AddData("authInfo", authInfo).
 			JSON(w)
 	} else {
-		gglmm.Panic("user info type error")
+		gglmm.FailResponse("user info type error").JSON(w)
 	}
 }

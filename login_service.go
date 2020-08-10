@@ -26,18 +26,22 @@ func NewLoginService(jwtConfig ConfigJWT, user User) *LoginService {
 func (service *LoginService) Login(w http.ResponseWriter, r *http.Request) {
 	request := LoginRequest{}
 	if err := gglmm.DecodeBody(r, &request); err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	if !request.Check() {
-		gglmm.Panic(gglmm.ErrRequest)
+		gglmm.FailResponse(gglmm.NewErrFileLine(gglmm.ErrRequest)).JSON(w)
+		return
 	}
 	authInfo, err := service.user.Login(request)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	gglmm.OkResponse().
 		AddData("authToken", authToken).

@@ -21,9 +21,9 @@ const (
 
 // Subject --
 type Subject struct {
-	Project string `json:"project"`
-	Type    string `json:"type"`
-	ID      uint64 `json:"id"`
+	Project  string `json:"project"`
+	UserType string `json:"userType"`
+	UserID   uint64 `json:"userId"`
 }
 
 // Info 认证信息
@@ -124,25 +124,34 @@ func ProjectFrom(r *http.Request) (string, error) {
 	return subject.Project, nil
 }
 
-// TypeFrom 从请求取认证类型
-func TypeFrom(r *http.Request) (string, error) {
+// UserTypeIDFrom --
+func UserTypeIDFrom(r *http.Request) (string, uint64, error) {
+	subject, err := SubjectFrom(r)
+	if err != nil {
+		return "", 0, err
+	}
+	return subject.UserType, subject.UserID, nil
+}
+
+// UserTypeFrom 从请求取认证类型
+func UserTypeFrom(r *http.Request) (string, error) {
 	subject, err := SubjectFrom(r)
 	if err != nil {
 		return "", err
 	}
-	return subject.Type, nil
+	return subject.UserType, nil
 }
 
-// IDFrom 从请求取认证ID
-func IDFrom(r *http.Request, checkType string) (uint64, error) {
+// UserIDFrom 从请求取认证ID
+func UserIDFrom(r *http.Request, checkType string) (uint64, error) {
 	subject, err := SubjectFrom(r)
 	if err != nil {
 		return 0, err
 	}
-	if subject.Type != checkType {
+	if subject.UserType != checkType {
 		return 0, ErrAuthType
 	}
-	return subject.ID, nil
+	return subject.UserID, nil
 }
 
 const (

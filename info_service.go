@@ -22,16 +22,18 @@ func NewInfoService(authType string, user User) *InfoService {
 
 // Info --
 func (service *InfoService) Info(w http.ResponseWriter, r *http.Request) {
-	userID, err := IDFrom(r, service.authType)
+	userID, err := UserIDFrom(r, service.authType)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	idRequest := gglmm.IDRequest{
 		ID: userID,
 	}
 	authInfo, err := service.user.Info(idRequest)
 	if err != nil {
-		gglmm.Panic(err)
+		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
+		return
 	}
 	gglmm.OkResponse().
 		AddData("authInfo", authInfo).
