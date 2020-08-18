@@ -35,8 +35,8 @@ type Info struct {
 
 // User --
 type User interface {
-	Login(request LoginRequest) (*Info, error)
-	Info(request gglmm.IDRequest) (*Info, error)
+	Login(request *LoginRequest) (*Info, error)
+	Info(request *gglmm.IDRequest) (*Info, error)
 }
 
 // WeixinMiniProgramUser --

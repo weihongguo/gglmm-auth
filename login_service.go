@@ -33,7 +33,7 @@ func (service *LoginService) Login(w http.ResponseWriter, r *http.Request) {
 		gglmm.FailResponse(gglmm.NewErrFileLine(gglmm.ErrRequest)).JSON(w)
 		return
 	}
-	authInfo, err := service.user.Login(request)
+	authInfo, err := service.user.Login(&request)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

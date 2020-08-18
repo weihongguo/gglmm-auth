@@ -30,7 +30,7 @@ func (service *InfoService) Info(w http.ResponseWriter, r *http.Request) {
 	idRequest := gglmm.IDRequest{
 		ID: userID,
 	}
-	authInfo, err := service.user.Info(idRequest)
+	authInfo, err := service.user.Info(&idRequest)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
