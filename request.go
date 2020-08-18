@@ -2,13 +2,13 @@ package auth
 
 // RegisterRequest 注册请求
 type RegisterRequest struct {
-	Mobile   string `json:"mobile"`
+	UserName string `json:"userName"`
 	Password string `json:"password"`
 }
 
 // Check --
 func (request RegisterRequest) Check() bool {
-	if request.Mobile == "" ||
+	if request.UserName == "" ||
 		request.Password == "" {
 		return false
 	}
