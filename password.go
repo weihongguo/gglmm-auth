@@ -1,6 +1,15 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"errors"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+// Err
+var (
+	ErrPassword = errors.New("密码错误")
+)
 
 // GeneratePassword 加密密码
 func GeneratePassword(password string) (string, error) {
