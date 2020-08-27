@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/weihongguo/gglmm"
@@ -20,10 +19,6 @@ type WeixinMiniProgramInfoService struct {
 
 // NewWeixinMiniProgramInfoService --
 func NewWeixinMiniProgramInfoService(miniProgramConfig weixin.ConfigMiniProgram, jwtConfig ConfigJWT, authType string, user WeixinMiniProgramUser) *WeixinMiniProgramInfoService {
-	if !miniProgramConfig.Check() || !jwtConfig.Check("all") {
-		log.Printf("%+v %+v\n", miniProgramConfig, jwtConfig)
-		log.Fatal("Config check invalid")
-	}
 	return &WeixinMiniProgramInfoService{
 		appID:      miniProgramConfig.AppID,
 		appSecret:  miniProgramConfig.AppSecret,
