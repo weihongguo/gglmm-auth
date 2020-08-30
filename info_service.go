@@ -22,7 +22,7 @@ func NewInfoService(authType string, user User) *InfoService {
 
 // Info --
 func (service *InfoService) Info(w http.ResponseWriter, r *http.Request) {
-	userID, err := UserIDFrom(r, service.authType)
+	userID, err := UserID(r, service.authType)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

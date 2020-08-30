@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-type UserID uint64
+type AuthTest uint64
 
-func (id UserID) Info() *Info {
+func (id AuthTest) Info() *Info {
 	return &Info{
 		Subject: &Subject{
 			UserType: "testType",
@@ -17,9 +17,9 @@ func (id UserID) Info() *Info {
 }
 
 func TestAuthorization(t *testing.T) {
-	userID := UserID(1)
-	info := userID.Info()
-	token, _, err := GenerateToken(info.Subject, JWTExpires, "testSecret")
+	authTest := AuthTest(1)
+	info := authTest.Info()
+	token, _, err := generateToken(info.Subject, JWTExpires, "testSecret")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,14 +30,14 @@ func TestAuthorization(t *testing.T) {
 	}
 	r1.Header.Add("Authorization", "Bearer "+token)
 
-	token = TokenFrom(r1)
-	_, _, err = ParseToken(token, "testSecret")
+	token = authorizationToken(r1)
+	_, _, err = parseToken(token, "testSecret")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	r2 := WithSubject(r1, info.Subject)
-	id, err := UserIDFrom(r2, "testType")
+	r2 := withSubject(r1, info.Subject)
+	id, err := UserID(r2, "testType")
 	if err != nil {
 		t.Fatal(err)
 	}

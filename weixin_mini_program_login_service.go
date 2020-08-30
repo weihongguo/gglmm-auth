@@ -49,7 +49,7 @@ func (service *WeixinMiniProgramLoginService) Login(w http.ResponseWriter, r *ht
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
 	}
-	authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
+	authToken, jwtClaims, err := generateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

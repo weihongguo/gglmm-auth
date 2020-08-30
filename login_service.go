@@ -38,7 +38,7 @@ func (service *LoginService) Login(w http.ResponseWriter, r *http.Request) {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
 	}
-	authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
+	authToken, jwtClaims, err := generateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

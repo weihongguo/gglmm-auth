@@ -8,8 +8,7 @@ type RegisterRequest struct {
 
 // Check --
 func (request RegisterRequest) Check() bool {
-	if request.UserName == "" ||
-		request.Password == "" {
+	if request.UserName == "" || request.Password == "" {
 		return false
 	}
 	return true
@@ -23,8 +22,7 @@ type LoginRequest struct {
 
 // Check --
 func (request LoginRequest) Check() bool {
-	if request.UserName == "" ||
-		request.Password == "" {
+	if request.UserName == "" || request.Password == "" {
 		return false
 	}
 	return true
@@ -38,8 +36,7 @@ type UpdatePasswordRequest struct {
 
 // Check --
 func (request UpdatePasswordRequest) Check() bool {
-	if request.OldPassword == "" ||
-		request.NewPassword == "" {
+	if request.OldPassword == "" || request.NewPassword == "" {
 		return false
 	}
 	return true

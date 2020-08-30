@@ -14,9 +14,9 @@ func MiddlewareJWTAuthChecker(secrets ...string) *gglmm.Middleware {
 		Func: func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				for _, secret := range secrets {
-					subject, _, err := ParseToken(TokenFrom(r), secret)
+					subject, _, err := parseToken(authorizationToken(r), secret)
 					if err == nil {
-						r = WithSubject(r, subject)
+						r = withSubject(r, subject)
 						next.ServeHTTP(w, r)
 						return
 					}

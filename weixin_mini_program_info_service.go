@@ -31,7 +31,7 @@ func NewWeixinMiniProgramInfoService(miniProgramConfig weixin.ConfigMiniProgram,
 
 // Info --
 func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http.Request) {
-	userID, err := UserIDFrom(r, service.authType)
+	userID, err := UserID(r, service.authType)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
@@ -56,7 +56,7 @@ func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http
 			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 			return
 		}
-		authToken, jwtClaims, err := GenerateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
+		authToken, jwtClaims, err := generateToken(authInfo.Subject, service.jwtExpires, service.jwtSecret)
 		if err != nil {
 			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 			return
