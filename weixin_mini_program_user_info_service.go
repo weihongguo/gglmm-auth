@@ -29,8 +29,8 @@ func NewWeixinMiniProgramInfoService(miniProgramConfig weixin.ConfigMiniProgram,
 	}
 }
 
-// Info --
-func (service *WeixinMiniProgramInfoService) Info(w http.ResponseWriter, r *http.Request) {
+// UserInfo --
+func (service *WeixinMiniProgramInfoService) UserInfo(w http.ResponseWriter, r *http.Request) {
 	userID, err := UserID(r, service.authType)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
