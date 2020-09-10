@@ -6,19 +6,24 @@ import (
 	"github.com/weihongguo/gglmm"
 )
 
+// LoginHelper --
+type LoginHelper interface {
+	Login(request *LoginRequest) (*Info, error)
+}
+
 // LoginService 登录服务
 type LoginService struct {
-	jwtExpires int64
-	jwtSecret  string
-	user       User
+	jwtExpires  int64
+	jwtSecret   string
+	loginHelper LoginHelper
 }
 
 // NewLoginService --
-func NewLoginService(jwtConfig ConfigJWT, user User) *LoginService {
+func NewLoginService(jwtConfig ConfigJWT, loginHelper LoginHelper) *LoginService {
 	return &LoginService{
-		jwtExpires: jwtConfig.Expires,
-		jwtSecret:  jwtConfig.Secret,
-		user:       user,
+		jwtExpires:  jwtConfig.Expires,
+		jwtSecret:   jwtConfig.Secret,
+		loginHelper: loginHelper,
 	}
 }
 
@@ -33,7 +38,7 @@ func (service *LoginService) Login(w http.ResponseWriter, r *http.Request) {
 		gglmm.FailResponse(gglmm.NewErrFileLine(gglmm.ErrRequest)).JSON(w)
 		return
 	}
-	authInfo, err := service.user.Login(&request)
+	authInfo, err := service.loginHelper.Login(&request)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

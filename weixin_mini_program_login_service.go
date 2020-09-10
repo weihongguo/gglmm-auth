@@ -7,23 +7,28 @@ import (
 	weixin "github.com/weihongguo/gglmm-weixin"
 )
 
+// WeixinMiniProgramLoginHelper --
+type WeixinMiniProgramLoginHelper interface {
+	Login(code2SessionResponse *weixin.MiniProgramCode2SessionResponse) (*Info, error)
+}
+
 // WeixinMiniProgramLoginService --
 type WeixinMiniProgramLoginService struct {
-	appID      string
-	appSecret  string
-	jwtExpires int64
-	jwtSecret  string
-	user       WeixinMiniProgramUser
+	appID       string
+	appSecret   string
+	jwtExpires  int64
+	jwtSecret   string
+	loginHelper WeixinMiniProgramLoginHelper
 }
 
 // NewWeixinMiniProgramLoginService --
-func NewWeixinMiniProgramLoginService(miniProgramConfig weixin.ConfigMiniProgram, jwtConfig ConfigJWT, user WeixinMiniProgramUser) *WeixinMiniProgramLoginService {
+func NewWeixinMiniProgramLoginService(miniProgramConfig weixin.ConfigMiniProgram, jwtConfig ConfigJWT, loginHelper WeixinMiniProgramLoginHelper) *WeixinMiniProgramLoginService {
 	return &WeixinMiniProgramLoginService{
-		appID:      miniProgramConfig.AppID,
-		appSecret:  miniProgramConfig.AppSecret,
-		jwtExpires: jwtConfig.Expires,
-		jwtSecret:  jwtConfig.Secret,
-		user:       user,
+		appID:       miniProgramConfig.AppID,
+		appSecret:   miniProgramConfig.AppSecret,
+		jwtExpires:  jwtConfig.Expires,
+		jwtSecret:   jwtConfig.Secret,
+		loginHelper: loginHelper,
 	}
 }
 
@@ -44,7 +49,7 @@ func (service *WeixinMiniProgramLoginService) Login(w http.ResponseWriter, r *ht
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return
 	}
-	authInfo, err := service.user.Login(code2SessionResponse)
+	authInfo, err := service.loginHelper.Login(code2SessionResponse)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

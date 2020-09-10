@@ -7,25 +7,31 @@ import (
 	weixin "github.com/weihongguo/gglmm-weixin"
 )
 
+// WeixinMiniProgramUserInfoHelper --
+type WeixinMiniProgramUserInfoHelper interface {
+	UserInfoRaw(userID uint64, userInfoRequest *weixin.MiniProgramUserInfoRequest) (*Info, error)
+	UserInfoEncrypted(userID uint64, userInfoRequest *weixin.MiniProgramUserInfoRequest) (*Info, error)
+}
+
 // WeixinMiniProgramInfoService --
 type WeixinMiniProgramInfoService struct {
-	appID      string
-	appSecret  string
-	jwtExpires int64
-	jwtSecret  string
-	authType   string
-	user       WeixinMiniProgramUser
+	appID          string
+	appSecret      string
+	jwtExpires     int64
+	jwtSecret      string
+	authType       string
+	userInfoHelper WeixinMiniProgramUserInfoHelper
 }
 
 // NewWeixinMiniProgramInfoService --
-func NewWeixinMiniProgramInfoService(miniProgramConfig weixin.ConfigMiniProgram, jwtConfig ConfigJWT, authType string, user WeixinMiniProgramUser) *WeixinMiniProgramInfoService {
+func NewWeixinMiniProgramInfoService(miniProgramConfig weixin.ConfigMiniProgram, jwtConfig ConfigJWT, authType string, userInfoHelper WeixinMiniProgramUserInfoHelper) *WeixinMiniProgramInfoService {
 	return &WeixinMiniProgramInfoService{
-		appID:      miniProgramConfig.AppID,
-		appSecret:  miniProgramConfig.AppSecret,
-		jwtExpires: jwtConfig.Expires,
-		jwtSecret:  jwtConfig.Secret,
-		authType:   authType,
-		user:       user,
+		appID:          miniProgramConfig.AppID,
+		appSecret:      miniProgramConfig.AppSecret,
+		jwtExpires:     jwtConfig.Expires,
+		jwtSecret:      jwtConfig.Secret,
+		authType:       authType,
+		userInfoHelper: userInfoHelper,
 	}
 }
 
@@ -42,7 +48,7 @@ func (service *WeixinMiniProgramInfoService) UserInfo(w http.ResponseWriter, r *
 		return
 	}
 	if userInfoRequest.Check("raw") {
-		authInfo, err := service.user.UserInfoRaw(userID, userInfoRequest)
+		authInfo, err := service.userInfoHelper.UserInfoRaw(userID, userInfoRequest)
 		if err != nil {
 			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 			return
@@ -51,7 +57,7 @@ func (service *WeixinMiniProgramInfoService) UserInfo(w http.ResponseWriter, r *
 			AddData("authInfo", authInfo).
 			JSON(w)
 	} else if userInfoRequest.Check("encrypted") {
-		authInfo, err := service.user.UserInfoEncrypted(userID, userInfoRequest)
+		authInfo, err := service.userInfoHelper.UserInfoEncrypted(userID, userInfoRequest)
 		if err != nil {
 			gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 			return

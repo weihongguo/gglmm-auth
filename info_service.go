@@ -6,17 +6,22 @@ import (
 	"github.com/weihongguo/gglmm"
 )
 
+// InfoHelper --
+type InfoHelper interface {
+	Info(request *gglmm.IDRequest) (*Info, error)
+}
+
 // InfoService --
 type InfoService struct {
-	authType string
-	user     User
+	authType   string
+	infoHelper InfoHelper
 }
 
 // NewInfoService --
-func NewInfoService(authType string, user User) *InfoService {
+func NewInfoService(authType string, infoHelper InfoHelper) *InfoService {
 	return &InfoService{
-		authType: authType,
-		user:     user,
+		authType:   authType,
+		infoHelper: infoHelper,
 	}
 }
 
@@ -30,7 +35,7 @@ func (service *InfoService) Info(w http.ResponseWriter, r *http.Request) {
 	idRequest := gglmm.IDRequest{
 		ID: userID,
 	}
-	authInfo, err := service.user.Info(&idRequest)
+	authInfo, err := service.infoHelper.Info(&idRequest)
 	if err != nil {
 		gglmm.FailResponse(gglmm.NewErrFileLine(err)).JSON(w)
 		return

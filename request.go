@@ -28,14 +28,14 @@ func (request LoginRequest) Check() bool {
 	return true
 }
 
-// UpdatePasswordRequest 修改密码请求
-type UpdatePasswordRequest struct {
+// PasswordUpdateRequest 修改密码请求
+type PasswordUpdateRequest struct {
 	OldPassword string `json:"oldPassword"`
 	NewPassword string `json:"newPassword"`
 }
 
 // Check --
-func (request UpdatePasswordRequest) Check() bool {
+func (request PasswordUpdateRequest) Check() bool {
 	if request.OldPassword == "" || request.NewPassword == "" {
 		return false
 	}

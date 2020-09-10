@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/weihongguo/gglmm"
-	weixin "github.com/weihongguo/gglmm-weixin"
 )
 
 type requestKey string
@@ -29,19 +27,6 @@ type Info struct {
 	*Subject
 	Nickname  string `json:"nickname"`
 	AvatarURL string `json:"avatarUrl"`
-}
-
-// User --
-type User interface {
-	Login(request *LoginRequest) (*Info, error)
-	Info(request *gglmm.IDRequest) (*Info, error)
-}
-
-// WeixinMiniProgramUser --
-type WeixinMiniProgramUser interface {
-	Login(code2SessionResponse *weixin.MiniProgramCode2SessionResponse) (*Info, error)
-	UserInfoRaw(userID uint64, userInfoRequest *weixin.MiniProgramUserInfoRequest) (*Info, error)
-	UserInfoEncrypted(userID uint64, userInfoRequest *weixin.MiniProgramUserInfoRequest) (*Info, error)
 }
 
 func generateToken(subject *Subject, expires int64, secret string) (string, *jwt.StandardClaims, error) {
